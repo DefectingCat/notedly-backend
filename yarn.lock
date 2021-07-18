@@ -280,6 +280,13 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/graphql-iso-date@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.nlark.com/@types/graphql-iso-date/download/@types/graphql-iso-date-3.4.0.tgz#b6710b21e3b0bfdb1a0529b285148d98eac18b1f"
+  integrity sha1-tnELIeOwv9saBSmyhRSNmOrBix8=
+  dependencies:
+    graphql "^15.1.0"
+
 "@types/http-assert@*":
   version "1.5.1"
   resolved "https://registry.nlark.com/@types/http-assert/download/@types/http-assert-1.5.1.tgz?cache=0&sync_timestamp=1621241353145&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fhttp-assert%2Fdownload%2F%40types%2Fhttp-assert-1.5.1.tgz#d775e93630c2469c2f980fc27e3143240335db3b"
@@ -1474,6 +1481,11 @@ graceful-fs@^4.1.2:
   resolved "https://registry.nlark.com/graceful-fs/download/graceful-fs-4.2.6.tgz?cache=0&sync_timestamp=1618846820463&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fgraceful-fs%2Fdownload%2Fgraceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha1-/wQLKwhTsjw9MQJ1I3BvGIXXa+4=
 
+graphql-iso-date@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.npm.taobao.org/graphql-iso-date/download/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
+  integrity sha1-vS0NyIbg+VTLu8SWu/HUgLV/+pY=
+
 graphql-tag@^2.11.0:
   version "2.12.5"
   resolved "https://registry.nlark.com/graphql-tag/download/graphql-tag-2.12.5.tgz?cache=0&sync_timestamp=1624638706892&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fgraphql-tag%2Fdownload%2Fgraphql-tag-2.12.5.tgz#5cff974a67b417747d05c8d9f5f3cb4495d0db8f"
@@ -1481,7 +1493,7 @@ graphql-tag@^2.11.0:
   dependencies:
     tslib "^2.1.0"
 
-graphql@^15.5.1:
+graphql@^15.1.0, graphql@^15.5.1:
   version "15.5.1"
   resolved "https://registry.nlark.com/graphql/download/graphql-15.5.1.tgz?cache=0&sync_timestamp=1624199256974&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fgraphql%2Fdownload%2Fgraphql-15.5.1.tgz#f2f84415d8985e7b84731e7f3536f8bb9d383aad"
   integrity sha1-8vhEFdiYXnuEcx5/NTb4u504Oq0=
