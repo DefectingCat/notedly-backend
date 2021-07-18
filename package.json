@@ -1,0 +1,28 @@
+{
+  "name": "notedly-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Arthur",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/app.ts"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/node": "^16.3.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "nodemon": "^2.0.12",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "apollo-server-koa": "^3.0.1",
+    "graphql": "^15.5.1",
+    "koa": "^2.13.1"
+  }
+}
