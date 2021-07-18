@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 // 定义笔记的数据库模式
-const noteSchema = new mongoose.Schema(
+const NoteSchema = new mongoose.Schema(
   {
     content: {
       type: String,
@@ -19,6 +19,6 @@ const noteSchema = new mongoose.Schema(
 );
 
 // 通过模式定义 Note 模型
-const Note = mongoose.model('Note', noteSchema);
+const Note = mongoose.model('Note', NoteSchema);
 
 export default Note;
