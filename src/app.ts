@@ -1,34 +1,36 @@
-import Koa from 'koa';
+import Koa, { Context } from 'koa';
 import { ApolloServer } from 'apollo-server-koa';
 import db from './db';
 import models from './models';
 import config from './config';
 import typeDefs from './schema';
 import resolvers from './resolvers';
+// util
+import getUser from './util/getUser';
 
 const DB_HOST = config.DB_HOST;
 
-async function startApolloServer() {
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: () => {
-      return { models };
-    },
-  });
-  await server.start();
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ ctx }: { ctx: Context }) => {
+    const token = ctx.req.headers.authorization;
+    let user;
+    // 验证用户 token
+    if (token) user = getUser(token);
+    console.log(user);
+    // 并传递到上下文中
+    return { models, user };
+  },
+});
 
-  const app = new Koa();
-  server.applyMiddleware({ app });
+const app = new Koa();
 
-  db.connect(DB_HOST);
+server.start().then(() => {
+  app.use(server.getMiddleware());
+});
 
-  await new Promise((resolve) => {
-    app.listen({ port: 4000 });
-    resolve('start');
-  });
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+db.connect(DB_HOST);
 
-  return { server, app };
-}
-startApolloServer();
+app.listen({ port: 4000 });
+console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);

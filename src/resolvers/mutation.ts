@@ -1,7 +1,7 @@
 import models from '../models';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { AuthenticationError, ForbiddenError } from 'apollo-server-errors';
+import { AuthenticationError } from 'apollo-server-errors';
 import gravatar from '../util/gravatar';
 
 export default {
