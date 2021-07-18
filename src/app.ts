@@ -1,11 +1,10 @@
 import Koa from 'koa';
 import { ApolloServer, gql } from 'apollo-server-koa';
+import db from './db';
+import config from './config';
+import models from './models';
 
-const notes = [
-  { id: '1', content: 'This is a note.', author: 'xfy' },
-  { id: '2', content: 'This is a another note.', author: 'dfy' },
-  { id: '3', content: 'This is a another another note.', author: 'Arthur' },
-];
+const DB_HOST = config.DB_HOST;
 
 async function startApolloServer() {
   // Construct a schema, using GraphQL schema language
@@ -29,20 +28,16 @@ async function startApolloServer() {
   const resolvers = {
     Query: {
       hello: () => 'Hello world!',
-      notes: () => notes,
-      note: (parent: unknown, args: { id: string }) => {
-        return notes.find((item) => item.id === args.id);
-      },
+      notes: async () => await models.Note.find(),
+      note: async (parent: unknown, args: { id: string }) =>
+        await models.Note.findById(args.id),
     },
     Mutation: {
-      newNote: (parent: unknown, { content }: { content: string }) => {
-        const newValue = {
-          id: String(notes.length),
-          content,
+      newNote: async (parent: unknown, args: { content: string }) => {
+        return await models.Note.create({
+          content: args.content,
           author: 'xfy',
-        };
-        notes.push(newValue);
-        return newValue;
+        });
       },
     },
   };
@@ -52,6 +47,8 @@ async function startApolloServer() {
 
   const app = new Koa();
   server.applyMiddleware({ app });
+
+  db.connect(DB_HOST);
 
   await new Promise((resolve) => {
     app.listen({ port: 4000 });

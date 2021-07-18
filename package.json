@@ -23,6 +23,7 @@
   "dependencies": {
     "apollo-server-koa": "^3.0.1",
     "graphql": "^15.5.1",
-    "koa": "^2.13.1"
+    "koa": "^2.13.1",
+    "mongoose": "^5.13.3"
   }
 }
