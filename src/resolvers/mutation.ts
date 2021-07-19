@@ -164,18 +164,21 @@ export default {
     args: { id: string },
     ctx: { user: { id: string } }
   ): Promise<void> => {
+    const { id } = args;
+    const { user } = ctx;
+
     if (!ctx.user)
       throw new AuthenticationError('You must be signed in to do it');
 
-    const noteCheck = await models.Note.findById(args.id);
-    const hasUser = noteCheck.favoritedBy.indexOf(ctx.user.id);
+    const noteCheck = await models.Note.findById(id);
+    const hasUser = noteCheck.favoritedBy.indexOf(user.id);
 
     if (~hasUser) {
       return await models.Note.findByIdAndUpdate(
-        args.id,
+        id,
         {
           $pull: {
-            favoritedBy: mongoose.Types.ObjectId(ctx.user.id),
+            favoritedBy: mongoose.Types.ObjectId(user.id),
           },
           $inc: {
             favoriteCount: -1,
@@ -187,10 +190,10 @@ export default {
       );
     } else {
       return await models.Note.findByIdAndUpdate(
-        args.id,
+        id,
         {
           $push: {
-            favoritedBy: mongoose.Types.ObjectId(ctx.user.id),
+            favoritedBy: mongoose.Types.ObjectId(user.id),
           },
           $inc: {
             favoriteCount: 1,
