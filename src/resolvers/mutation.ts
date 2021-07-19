@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthenticationError } from 'apollo-server-errors';
 import gravatar from '../util/gravatar';
+import mongoose from 'mongoose';
+import { ForbiddenError } from 'apollo-server-koa';
 
 export default {
   /**
@@ -13,11 +15,15 @@ export default {
    */
   newNote: async (
     parent: unknown,
-    args: { content: string }
+    args: { content: string },
+    ctx: { user: { id: string } }
   ): Promise<void> => {
+    if (!ctx.user)
+      throw new AuthenticationError('You must be signed in to create a note');
+
     return await models.Note.create({
       content: args.content,
-      author: 'xfy',
+      author: mongoose.Types.ObjectId(ctx.user.id),
     });
   },
 
@@ -29,8 +35,17 @@ export default {
    */
   updateNote: async (
     parent: unknown,
-    args: { id: string; content: string }
+    args: { id: string; content: string },
+    ctx: { user: { id: string } }
   ): Promise<void> => {
+    if (!ctx.user)
+      throw new AuthenticationError('You must be signed in to update a note');
+
+    // 验证当前用户所修改的笔记
+    const note = await models.Note.findById(args.id);
+    if (note && String(note.author) !== ctx.user.id)
+      throw new ForbiddenError(`You don't have permissions to update the note`);
+
     return await models.Note.findOneAndUpdate(
       {
         _id: args.id,
@@ -54,8 +69,17 @@ export default {
    */
   deleteNote: async (
     parent: unknown,
-    args: { id: string }
+    args: { id: string },
+    ctx: { user: { id: string } }
   ): Promise<boolean> => {
+    if (!ctx.user)
+      throw new AuthenticationError('You must be signed in to delete a note');
+
+    // 验证当前用户所修改的笔记
+    const note = await models.Note.findById(args.id);
+    if (note && String(note.author) !== ctx.user.id)
+      throw new ForbiddenError(`You don't have permissions to delete the note`);
+
     try {
       await models.Note.findOneAndDelete({
         _id: args.id,
@@ -126,5 +150,56 @@ export default {
     if (!valid) throw new AuthenticationError('Error signing in');
     // 创建并返回 JWT
     return jwt.sign({ id: user._id }, '123');
+  },
+
+  /**
+   * 收藏笔记对应数据库方法
+   * @param parent
+   * @param args 笔记 id
+   * @param ctx 用户 id
+   * @returns
+   */
+  toggleFavorite: async (
+    parent: unknown,
+    args: { id: string },
+    ctx: { user: { id: string } }
+  ): Promise<void> => {
+    if (!ctx.user)
+      throw new AuthenticationError('You must be signed in to do it');
+
+    const noteCheck = await models.Note.findById(args.id);
+    const hasUser = noteCheck.favoritedBy.indexOf(ctx.user.id);
+
+    if (~hasUser) {
+      return await models.Note.findByIdAndUpdate(
+        args.id,
+        {
+          $pull: {
+            favoritedBy: mongoose.Types.ObjectId(ctx.user.id),
+          },
+          $inc: {
+            favoriteCount: -1,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    } else {
+      return await models.Note.findByIdAndUpdate(
+        args.id,
+        {
+          $push: {
+            favoritedBy: mongoose.Types.ObjectId(ctx.user.id),
+          },
+          $inc: {
+            favoriteCount: 1,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    }
   },
 };

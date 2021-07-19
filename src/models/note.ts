@@ -8,9 +8,20 @@ const NoteSchema = new mongoose.Schema(
       require: true,
     },
     author: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       require: true,
     },
+    favoriteCount: {
+      type: Number,
+      default: 0,
+    },
+    favoritedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     // 添加 Date 类型的 createAt 和 updateAt 字段
