@@ -1,5 +1,5 @@
 import models from '../models';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { AuthenticationError } from 'apollo-server-errors';
 import gravatar from '../util/gravatar';
