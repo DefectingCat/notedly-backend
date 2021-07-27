@@ -32,34 +32,43 @@ export default {
     args: { cursor?: string }
   ): Promise<unknown> => {
     const { cursor } = args;
+
     // 限制每次返回 10 个元素
     const limit = 10;
     let hasNextPage = false;
-    // 如果没有传递游标
-    // 则从数据库中获取最新的笔记
+
+    /**
+     * 如果没有传递游标
+     * 则从数据库中获取最新的笔记
+     */
     let cursorQuery = {};
 
-    // 如果传递了游标
-    // 则查询对象 ID 小于游标的笔记
-    if (cursor) {
-      cursorQuery = { _id: { $lt: cursor } };
-    }
+    /**
+     * 如果传递了游标
+     * 则查询对象 ID 小于游标的笔记
+     */
+    if (cursor) cursorQuery = { _id: { $lt: cursor } };
 
     // 从数据库中查询 limit + 1 篇笔记，从新到旧排序
     let notes = await models.Note.find(cursorQuery)
       .sort({ _id: -1 })
       .limit(limit + 1);
 
-    // 如果查询笔记数量大于限制数量
-    // 把 hasNextPage 设为 true，截取结果，返回限定的数量
+    /**
+     *  返回新游标，查询下一页
+     *  新游标是笔记动态数组中最后一个元素的 ID
+     */
+    let newCursor = '';
+
+    /**
+     * 如果查询笔记数量大于限制数量
+     * 把 hasNextPage 设为 true，截取结果，返回限定的数量
+     */
     if (notes.length > limit) {
       hasNextPage = true;
       notes = notes.slice(0, -1);
+      newCursor = notes[notes.length - 1]._id; // 只在有下一页时传递新的 cursor
     }
-
-    // 返回新游标，查询下一页
-    // 新游标是笔记动态数组中最后一个元素的 ID
-    const newCursor = notes[notes.length - 1]._id;
 
     return {
       notes,

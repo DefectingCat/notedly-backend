@@ -6,7 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon dist/app.js",
+    "w": "tsc -w",
     "build": "tsc"
   },
   "devDependencies": {
