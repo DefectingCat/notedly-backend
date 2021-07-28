@@ -1,27 +1,5 @@
 import models from '../models';
 
-interface NoteQuery {
-  $and:
-    | (
-        | {
-            author: string;
-          }
-        | Record<string, unknown>
-      )[]
-    | (
-        | {
-            author: string;
-            _id?: undefined;
-          }
-        | {
-            _id: {
-              $lt: string;
-            };
-            author?: undefined;
-          }
-      )[];
-}
-
 export default {
   /**
    * 嵌套查询用户收藏的所有笔记

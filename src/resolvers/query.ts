@@ -22,6 +22,12 @@ interface NoteQuery {
       )[];
 }
 
+/**
+ * 这是查询所有笔记分页的方法
+ * 对应前端的首页
+ * @param cursor 分页时的笔记 id
+ * @returns
+ */
 const queryNotes = async (cursor?: string) => {
   // 限制每次返回 10 个元素
   const limit = 10;
@@ -67,6 +73,13 @@ const queryNotes = async (cursor?: string) => {
   };
 };
 
+/**
+ * 该方法是查询当前用户的所有笔记的分页方法
+ * 对应在 我的动态
+ * @param cursor 分页时的笔记 id
+ * @param _id 上下文中的用户 id
+ * @returns
+ */
 const queryMyNotes = async (cursor?: string, _id?: string) => {
   const limit = 10;
 

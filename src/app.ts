@@ -1,7 +1,6 @@
 import Koa, { Context } from 'koa';
 import { ApolloServer } from 'apollo-server-koa';
 import db from './db';
-// import models from './models';
 import config from './config';
 import typeDefs from './schema';
 import resolvers from './resolvers';
@@ -10,10 +9,6 @@ import getUser from './util/getUser';
 import helmet from 'koa-helmet';
 import logger from 'koa-logger';
 import cors from '@koa/cors';
-/**
- * @TODO
- * 数据限制
- */
 
 const DB_HOST = config.DB_HOST;
 
