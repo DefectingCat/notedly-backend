@@ -21,7 +21,7 @@ export default gql`
     username: String!
     email: String!
     avatar: String!
-    myNotes(cursor: ID): NoteFeed!
+    myNotes(cursor: String): NoteFeed!
     favorites: [Note!]!
   }
   type Query {
