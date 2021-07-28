@@ -21,7 +21,6 @@ export default gql`
     username: String!
     email: String!
     avatar: String!
-    myNotes(cursor: String): NoteFeed!
     favorites: [Note!]!
   }
   type Query {
@@ -30,7 +29,8 @@ export default gql`
     user(username: String!): User!
     users: [User!]!
     me: User!
-    noteFeed(cursor: String): NoteFeed
+    noteFeed(cursor: String): NoteFeed!
+    myNotes(cursor: String): NoteFeed!
   }
   type Mutation {
     newNote(content: String!): Note!
