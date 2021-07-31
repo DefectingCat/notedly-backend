@@ -1,3 +1,4 @@
+import { AuthenticationError } from 'apollo-server-koa';
 import models from '../models';
 
 interface NoteQuery {
@@ -18,6 +19,28 @@ interface NoteQuery {
               $lt: string;
             };
             author?: undefined;
+          }
+      )[];
+}
+
+interface CommentQuery {
+  $and:
+    | (
+        | {
+            post: string;
+          }
+        | Record<string, unknown>
+      )[]
+    | (
+        | {
+            post: string;
+            _id?: undefined;
+          }
+        | {
+            _id: {
+              $lt: string;
+            };
+            post?: undefined;
           }
       )[];
 }
@@ -153,5 +176,53 @@ export default {
     ctx: { user: { id: string } }
   ): Promise<unknown> => {
     return await queryMyNotes(args.cursor, ctx.user.id);
+  },
+
+  /**
+   * 该方法用于查询所有评论
+   * 并进行游标分页
+   * 分页方式与【我的动态】所有笔记分页方式相同
+   * @param parent
+   * @param args
+   * @param ctx
+   * @returns
+   */
+  comments: async (
+    parent: unknown,
+    args: { cursor?: string; post: string },
+    ctx: { user: { id: string } }
+  ): Promise<unknown> => {
+    if (!ctx.user)
+      throw new AuthenticationError(
+        'You must be signed in to create a comment'
+      );
+
+    const { cursor, post } = args;
+
+    const limit = 10;
+    let hasNextPage = false;
+
+    const cursorQuery: CommentQuery = {
+      $and: [{ post }, {}],
+    };
+    cursor && (cursorQuery['$and'][1] = { _id: { $lt: cursor } });
+
+    let comments = await models.Comment.find(cursorQuery)
+      .sort({ _id: -1 })
+      .limit(limit + 1);
+
+    let newCursor = '';
+
+    if (comments.length > limit) {
+      hasNextPage = true;
+      comments = comments.slice(0, -1);
+      newCursor = comments[comments.length - 1]._id;
+    }
+
+    return {
+      comments,
+      cursor: newCursor,
+      hasNextPage,
+    };
   },
 };

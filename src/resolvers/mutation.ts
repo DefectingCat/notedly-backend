@@ -205,4 +205,35 @@ export default {
       );
     }
   },
+
+  /**
+   * 评论
+   */
+  newComment: async (
+    parent: unknown,
+    args: { content: string; post: string; reply?: string; to?: string },
+    ctx: { user: { id: string } }
+  ): Promise<void> => {
+    if (!ctx.user)
+      throw new AuthenticationError(
+        'You must be signed in to create a comment'
+      );
+
+    const { content, post, reply, to } = args;
+
+    if (reply) {
+      return await models.Reply.create({
+        parent: mongoose.Types.ObjectId(reply),
+        content,
+        author: mongoose.Types.ObjectId(ctx.user.id),
+        toUser: mongoose.Types.ObjectId(to),
+      });
+    } else {
+      return await models.Comment.create({
+        post: mongoose.Types.ObjectId(post),
+        content,
+        author: mongoose.Types.ObjectId(ctx.user.id),
+      });
+    }
+  },
 };
