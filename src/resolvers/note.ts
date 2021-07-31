@@ -18,4 +18,10 @@ export default {
   favoritedBy: async (note: { favoritedBy: unknown[] }): Promise<unknown> => {
     return await models.User.find({ _id: { $in: note.favoritedBy } });
   },
+
+  commentNum: async (note: { id: string }): Promise<unknown> => {
+    return await models.Comment.count({
+      post: note.id,
+    });
+  },
 };

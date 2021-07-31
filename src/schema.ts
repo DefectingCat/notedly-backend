@@ -10,6 +10,7 @@ export default gql`
     updatedAt: DateTime!
     favoriteCount: Int!
     favoritedBy: [User!]
+    commentNum: String
   }
   type NoteFeed {
     notes: [Note]!
@@ -22,6 +23,7 @@ export default gql`
     hasNextPage: Boolean!
   }
   type Reply {
+    id: ID!
     parent: ID!
     content: String!
     author: User!
@@ -35,6 +37,8 @@ export default gql`
     author: User!
     favoriteCount: Int!
     favoritedBy: [User!]
+    createdAt: DateTime!
+    updatedAt: DateTime!
     reply: [Reply]
     post: ID!
   }

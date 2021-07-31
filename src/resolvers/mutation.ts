@@ -222,6 +222,9 @@ export default {
     const { content, post, reply, to } = args;
 
     if (reply) {
+      await models.Reply.findByIdAndUpdate(reply, {
+        hasReply: true,
+      });
       return await models.Reply.create({
         parent: mongoose.Types.ObjectId(reply),
         content,
