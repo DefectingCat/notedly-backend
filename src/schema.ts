@@ -28,11 +28,14 @@ export default gql`
     content: String!
     author: User!
     toUser: User!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     favoriteCount: Int!
     favoritedBy: [User!]
   }
   type Comment {
     id: ID!
+    parent: ID
     content: String!
     author: User!
     favoriteCount: Int!
@@ -67,5 +70,6 @@ export default gql`
     signIn(username: String!, email: String, password: String!): String!
     toggleFavorite(id: ID!): Note!
     newComment(content: String!, post: ID!, reply: ID, to: ID): Comment!
+    favoriteComment(id: ID!, isReply: Boolean): Comment!
   }
 `;

@@ -170,6 +170,7 @@ export default {
     if (!ctx.user)
       throw new AuthenticationError('You must be signed in to do it');
 
+    // 判断当前用户是否已经点赞
     const noteCheck = await models.Note.findById(id);
     const hasUser = noteCheck.favoritedBy.indexOf(user.id);
 
@@ -207,7 +208,11 @@ export default {
   },
 
   /**
-   * 评论
+   * 该函数用于添加新的评论
+   * @param parent
+   * @param args content：评论内容；post 当前文章 id；reply：回复的父评论 id；to：被回复的用户 id
+   * @param ctx
+   * @returns
    */
   newComment: async (
     parent: unknown,
@@ -222,9 +227,6 @@ export default {
     const { content, post, reply, to } = args;
 
     if (reply) {
-      await models.Reply.findByIdAndUpdate(reply, {
-        hasReply: true,
-      });
       return await models.Reply.create({
         parent: mongoose.Types.ObjectId(reply),
         content,
@@ -237,6 +239,96 @@ export default {
         content,
         author: mongoose.Types.ObjectId(ctx.user.id),
       });
+    }
+  },
+
+  /**
+   *
+   * @param parent
+   * @param args id：被点赞的评论 id
+   * @param ctx
+   */
+  favoriteComment: async (
+    parent: unknown,
+    args: { id: string; isReply?: boolean },
+    ctx: { user: { id: string } }
+  ): Promise<void> => {
+    const { id, isReply } = args;
+    const { user } = ctx;
+
+    if (!ctx.user)
+      throw new AuthenticationError('You must be signed in to do it');
+
+    if (isReply) {
+      const check = await models.Reply.findById(id);
+      const hasUser = check.favoritedBy.indexOf(user.id);
+
+      if (~hasUser) {
+        return await models.Reply.findByIdAndUpdate(
+          id,
+          {
+            $pull: {
+              favoritedBy: mongoose.Types.ObjectId(user.id),
+            },
+            $inc: {
+              favoriteCount: -1,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+      } else {
+        return await models.Reply.findByIdAndUpdate(
+          id,
+          {
+            $push: {
+              favoritedBy: mongoose.Types.ObjectId(user.id),
+            },
+            $inc: {
+              favoriteCount: 1,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+      }
+    } else {
+      const check = await models.Comment.findById(id);
+      const hasUser = check.favoritedBy.indexOf(user.id);
+
+      if (~hasUser) {
+        return await models.Comment.findByIdAndUpdate(
+          id,
+          {
+            $pull: {
+              favoritedBy: mongoose.Types.ObjectId(user.id),
+            },
+            $inc: {
+              favoriteCount: -1,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+      } else {
+        return await models.Comment.findByIdAndUpdate(
+          id,
+          {
+            $push: {
+              favoritedBy: mongoose.Types.ObjectId(user.id),
+            },
+            $inc: {
+              favoriteCount: 1,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+      }
     }
   },
 };

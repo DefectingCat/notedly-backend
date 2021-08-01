@@ -1,5 +1,5 @@
 import { author } from './comment';
-import models from '../models';
+import { favoritedBy } from './note';
 
 interface Reply {
   _id: string;
@@ -12,22 +12,5 @@ interface Reply {
 export default {
   author,
   toUser: author,
-  /*   reply: async function (reply: Reply): Promise<Reply[] | undefined> {
-    if (reply.hasReply) {
-      const replies: Reply[] = [];
-
-      const data: Reply = await models.Reply.find({
-        parent: reply._id,
-      });
-
-      replies.push(data);
-      if (data.hasReply) {
-        this.reply(data);
-      }
-
-      console.log(replies);
-
-      return replies;
-    }
-  }, */
+  favoritedBy,
 };

@@ -35,9 +35,6 @@ const ReplySchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
-    hasReply: {
-      type: Boolean,
-    },
   },
   {
     // 添加 Date 类型的 createAt 和 updateAt 字段

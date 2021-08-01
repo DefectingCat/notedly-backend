@@ -1,5 +1,11 @@
 import models from '../models';
 
+export const favoritedBy = async (ctx: {
+  favoritedBy: unknown[];
+}): Promise<unknown> => {
+  return await models.User.find({ _id: { $in: ctx.favoritedBy } });
+};
+
 export default {
   /**
    * 嵌套查询笔记作者信息
@@ -15,9 +21,7 @@ export default {
    * @param note
    * @returns
    */
-  favoritedBy: async (note: { favoritedBy: unknown[] }): Promise<unknown> => {
-    return await models.User.find({ _id: { $in: note.favoritedBy } });
-  },
+  favoritedBy,
 
   commentNum: async (note: { id: string }): Promise<unknown> => {
     return await models.Comment.count({
