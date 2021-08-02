@@ -42,3 +42,5 @@ app.listen({ port: config.PORT });
 console.log(
   `🚀 Server ready at http://localhost:${config.PORT}${server.graphqlPath}`
 );
+
+export default app;

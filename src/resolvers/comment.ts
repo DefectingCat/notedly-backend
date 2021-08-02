@@ -28,11 +28,9 @@ export default {
    * @returns
    */
   reply: async (comment: Comment): Promise<void> => {
-    const data = await models.Reply.find({
+    return await models.Reply.find({
       parent: comment._id,
     });
-    console.log(data);
-    return data;
   },
   author,
   favoritedBy,

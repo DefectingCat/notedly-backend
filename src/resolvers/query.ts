@@ -1,4 +1,3 @@
-import { AuthenticationError } from 'apollo-server-koa';
 import models from '../models';
 
 interface NoteQuery {
@@ -189,14 +188,8 @@ export default {
    */
   comments: async (
     parent: unknown,
-    args: { cursor?: string; post: string },
-    ctx: { user: { id: string } }
+    args: { cursor?: string; post: string }
   ): Promise<unknown> => {
-    if (!ctx.user)
-      throw new AuthenticationError(
-        'You must be signed in to create a comment'
-      );
-
     const { cursor, post } = args;
 
     const limit = 10;

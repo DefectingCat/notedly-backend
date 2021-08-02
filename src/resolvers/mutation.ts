@@ -6,6 +6,53 @@ import gravatar from '../util/gravatar';
 import mongoose from 'mongoose';
 import { ForbiddenError } from 'apollo-server-koa';
 
+/**
+ * 该方法是 favoriteComment 操作数据的动作抽象
+ * @param col 被操作的集合
+ * @param inc favoriteCount 增加还是减少
+ * @param id 查询的评论 id
+ * @param userId 上下文中的用户 id
+ * @returns
+ */
+const togFavorite = async (
+  col: 'Reply' | 'Comment',
+  inc: boolean,
+  id: string,
+  userId: string
+) => {
+  if (inc) {
+    return await models[col].findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          favoritedBy: mongoose.Types.ObjectId(userId),
+        },
+        $inc: {
+          favoriteCount: 1,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  } else {
+    return await models[col].findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          favoritedBy: mongoose.Types.ObjectId(userId),
+        },
+        $inc: {
+          favoriteCount: -1,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  }
+};
+
 export default {
   /**
    * 这是创建新笔记对应的解析器
@@ -264,70 +311,18 @@ export default {
       const hasUser = check.favoritedBy.indexOf(user.id);
 
       if (~hasUser) {
-        return await models.Reply.findByIdAndUpdate(
-          id,
-          {
-            $pull: {
-              favoritedBy: mongoose.Types.ObjectId(user.id),
-            },
-            $inc: {
-              favoriteCount: -1,
-            },
-          },
-          {
-            new: true,
-          }
-        );
+        return await togFavorite('Reply', false, id, user.id);
       } else {
-        return await models.Reply.findByIdAndUpdate(
-          id,
-          {
-            $push: {
-              favoritedBy: mongoose.Types.ObjectId(user.id),
-            },
-            $inc: {
-              favoriteCount: 1,
-            },
-          },
-          {
-            new: true,
-          }
-        );
+        return await togFavorite('Reply', true, id, user.id);
       }
     } else {
       const check = await models.Comment.findById(id);
       const hasUser = check.favoritedBy.indexOf(user.id);
 
       if (~hasUser) {
-        return await models.Comment.findByIdAndUpdate(
-          id,
-          {
-            $pull: {
-              favoritedBy: mongoose.Types.ObjectId(user.id),
-            },
-            $inc: {
-              favoriteCount: -1,
-            },
-          },
-          {
-            new: true,
-          }
-        );
+        return await togFavorite('Comment', false, id, user.id);
       } else {
-        return await models.Comment.findByIdAndUpdate(
-          id,
-          {
-            $push: {
-              favoritedBy: mongoose.Types.ObjectId(user.id),
-            },
-            $inc: {
-              favoriteCount: 1,
-            },
-          },
-          {
-            new: true,
-          }
-        );
+        return await togFavorite('Comment', true, id, user.id);
       }
     }
   },
