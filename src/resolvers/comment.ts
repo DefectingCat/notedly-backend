@@ -8,6 +8,7 @@ export interface Comment {
   content: string;
   post: string;
   author: string;
+  toUser: string;
 }
 
 /**

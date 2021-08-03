@@ -1,5 +1,7 @@
+import { models } from 'mongoose';
 import { author } from './comment';
 import { favoritedBy } from './note';
+import { Comment } from './comment';
 
 interface Reply {
   _id: string;
@@ -11,6 +13,8 @@ interface Reply {
 
 export default {
   author,
-  toUser: author,
+  toUser: async (comment: Comment): Promise<void> => {
+    return models.User.findById(comment.toUser);
+  },
   favoritedBy,
 };
