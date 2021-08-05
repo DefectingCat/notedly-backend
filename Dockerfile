@@ -22,5 +22,5 @@ ENV APOLLO_KEY=service:Notedly-n9w1gm:ct4zEA41W1eGiQQhjli4Ew
 ENV APOLLO_GRAPH_ID=Notedly-n9w1gm
 ENV APOLLO_GRAPH_VARIANT=current
 ENV APOLLO_SCHEMA_REPORTING=true
-EXPOSE 3000
+EXPOSE 4000
 CMD [ "node", "dist/app.js" ]
