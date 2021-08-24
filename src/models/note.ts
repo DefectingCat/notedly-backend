@@ -1,14 +1,22 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
+import { User } from './user';
+
+interface Note {
+  content: string;
+  author: User[];
+  favoriteCount?: number;
+  favoritedBy?: User[];
+}
 
 // 定义笔记的数据库模式
-const NoteSchema = new mongoose.Schema(
+const NoteSchema = new Schema<Note>(
   {
     content: {
       type: String,
       require: true,
     },
     author: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       require: true,
     },
@@ -18,7 +26,7 @@ const NoteSchema = new mongoose.Schema(
     },
     favoritedBy: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
       },
     ],
@@ -30,6 +38,6 @@ const NoteSchema = new mongoose.Schema(
 );
 
 // 通过模式定义 Note 模型
-const Note = mongoose.model('Note', NoteSchema);
+const Note = model<Note>('Note', NoteSchema);
 
 export default Note;

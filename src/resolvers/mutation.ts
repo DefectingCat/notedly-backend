@@ -326,4 +326,26 @@ export default {
       }
     }
   },
+
+  /**
+   * 删除笔记的方法
+   * 只删除已经当前用户下的笔记，无法删除其他用户的笔记
+   * @param parent
+   * @param args 笔记 id
+   * @returns
+   */
+  delNote: async (
+    parent: unknown,
+    args: { id: string },
+    ctx: { user: { id: string } }
+  ): Promise<boolean> => {
+    if (!ctx.user)
+      throw new AuthenticationError('You must be signed in to do it');
+
+    const result = await models.Note.findOneAndDelete({
+      $and: [{ _id: args.id }, { author: ctx.user.id }],
+    });
+
+    return result ? true : false;
+  },
 };

@@ -71,5 +71,6 @@ export default gql`
     toggleFavorite(id: ID!): Note!
     newComment(content: String!, post: ID!, reply: ID, to: ID): Comment!
     favoriteComment(id: ID!, isReply: Boolean): Comment!
+    delNote(id: ID!): Boolean
   }
 `;
