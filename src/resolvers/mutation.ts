@@ -148,6 +148,11 @@ export default {
     parent: unknown,
     args: { username: string; email: string; password: string }
   ): Promise<string> => {
+    /**
+     * @TODO 为 JWT 添加非对称密钥
+     */
+    return "Can't register temporarily.";
+
     // 规范电子邮件地址
     const email = args.email.trim().toLowerCase();
     // 计算密码的 hash 值
