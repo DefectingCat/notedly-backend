@@ -18,7 +18,7 @@ export interface Comment {
  * @returns
  */
 export async function author(comment: Comment): Promise<void> {
-  return models.User.findById(comment.author);
+  return await models.User.findById(comment.author);
 }
 
 export default {

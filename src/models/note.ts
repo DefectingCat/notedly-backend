@@ -3,7 +3,7 @@ import { User } from './user';
 
 interface Note {
   content: string;
-  author: User[];
+  author: string[];
   favoriteCount?: number;
   favoritedBy?: User[];
 }

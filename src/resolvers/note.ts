@@ -24,7 +24,7 @@ export default {
   favoritedBy,
 
   commentNum: async (note: { id: string }): Promise<unknown> => {
-    return await models.Comment.count({
+    return await models.Comment.countDocuments({
       post: note.id,
     });
   },

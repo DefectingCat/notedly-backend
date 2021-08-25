@@ -1,10 +1,15 @@
 import mongoose from 'mongoose';
 
 export interface User {
+  _id: ID;
   username: string;
   email: string;
   password: string;
   avatar?: string;
+}
+
+export interface ID {
+  $oid: string;
 }
 
 const UserSchema = new mongoose.Schema<User>({

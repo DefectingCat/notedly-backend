@@ -5,6 +5,8 @@ import { AuthenticationError } from 'apollo-server-errors';
 import gravatar from '../util/gravatar';
 import mongoose from 'mongoose';
 import { ForbiddenError } from 'apollo-server-koa';
+import { Comment } from '../models/comment';
+import { Reply } from '../models/reply';
 
 /**
  * 该方法是 favoriteComment 操作数据的动作抽象
@@ -147,11 +149,11 @@ export default {
   signUp: async (
     parent: unknown,
     args: { username: string; email: string; password: string }
-  ): Promise<string> => {
+  ): Promise<boolean> => {
     /**
      * @TODO 为 JWT 添加非对称密钥
      */
-    return "Can't register temporarily.";
+    return false; // "Can't register temporarily.";
 
     // 规范电子邮件地址
     const email = args.email.trim().toLowerCase();
@@ -168,7 +170,7 @@ export default {
       });
 
       // 创建并返回 JWT
-      return jwt.sign({ id: user._id }, '123');
+      // return jwt.sign({ id: user._id }, '123');
     } catch (e) {
       console.log(e);
       throw new Error('Error creating account');
@@ -201,7 +203,7 @@ export default {
     // 如果密码错误，则抛出 AuthenticationError
     if (!valid) throw new AuthenticationError('Error signing in');
     // 创建并返回 JWT
-    return jwt.sign({ id: user._id }, '123');
+    return jwt.sign({ id: user._id }, '123', { expiresIn: '7d' });
   },
 
   /**
@@ -270,7 +272,7 @@ export default {
     parent: unknown,
     args: { content: string; post: string; reply?: string; to?: string },
     ctx: { user: { id: string } }
-  ): Promise<void> => {
+  ): Promise<Comment | Reply> => {
     if (!ctx.user)
       throw new AuthenticationError(
         'You must be signed in to create a comment'
@@ -312,7 +314,7 @@ export default {
       throw new AuthenticationError('You must be signed in to do it');
 
     if (isReply) {
-      const check = await models.Reply.findById(id);
+      const check: Reply = await models.Reply.findById(id);
       const hasUser = check.favoritedBy.indexOf(user.id);
 
       if (~hasUser) {
@@ -321,7 +323,7 @@ export default {
         return await togFavorite('Reply', true, id, user.id);
       }
     } else {
-      const check = await models.Comment.findById(id);
+      const check: Comment = await models.Comment.findById(id);
       const hasUser = check.favoritedBy.indexOf(user.id);
 
       if (~hasUser) {
@@ -350,6 +352,22 @@ export default {
     const result = await models.Note.findOneAndDelete({
       $and: [{ _id: args.id }, { author: ctx.user.id }],
     });
+
+    if (result) {
+      const comments: Comment[] = await models.Comment.find({
+        post: args.id,
+      });
+      // 以及评论的回复
+      comments.map(async (item) => {
+        await models.Reply.deleteMany({
+          parent: item._id,
+        });
+      });
+      // 同时删除评论
+      await models.Comment.deleteMany({
+        post: args.id,
+      });
+    }
 
     return result ? true : false;
   },
